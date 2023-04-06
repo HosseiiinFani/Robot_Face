@@ -1,7 +1,7 @@
 import pygame
 from serial import Serial
 
-PORT="/dev/cu.usbserial-14330"
+PORT="/dev/cu.usbserial-14320"
 
 def main():
     pygame.init()
@@ -26,6 +26,13 @@ def main():
     sleepy_button = pygame.transform.scale(pygame.image.load("lib/assets/sleepy.png"), (100,40))
     excited_button = pygame.transform.scale(pygame.image.load("lib/assets/excited.png"), (100,40))
 
+    low = pygame.image.load("lib/assets/1.png")
+    medium = pygame.image.load("lib/assets/2.png")
+    high = pygame.image.load("lib/assets/3.png")
+    extreme = pygame.image.load("lib/assets/4.png")
+    
+    mood_values = {'happy': medium, 'angry': extreme, 'sleepy': low, 'excited': high}
+
     screen = pygame.display.set_mode((480,800))
     clock = pygame.time.Clock()
 
@@ -36,8 +43,9 @@ def main():
     screen.fill(BG)
 
     while run:
-        data = arduino.readline()
-        value = int(data.decode(encoding='UTF-8'))
+        if ARDUINO:
+            data = arduino.readline()
+            value = int(data.decode(encoding='UTF-8'))
         screen.fill(BG)
         mood_text = base_font.render(f"Current mood: {current_mood}", False, (0,0,0))
         sleepy_rect = screen.blit(sleepy_button, (50, screen.get_height() - 100))
@@ -50,17 +58,19 @@ def main():
             if (value >= 60 and value < 120): current_mood = "happy"
             if (value >= 120 and value < 200): current_mood = "excited"
             if value >= 200: current_mood = "angry"
- 
+
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT: run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if sleepy_rect.collidepoint(event.pos): current_mood = "sleepy"
-                if happy_rect.collidepoint(event.pos): current_mood = "happy"
-                if excited_rect.collidepoint(event.pos): current_mood = "excited"
-                if angry_rect.collidepoint(event.pos): current_mood = "angry"
+            if not ARDUINO:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if sleepy_rect.collidepoint(event.pos): current_mood = "sleepy"
+                    if happy_rect.collidepoint(event.pos): current_mood = "happy"
+                    if excited_rect.collidepoint(event.pos): current_mood = "excited"
+                    if angry_rect.collidepoint(event.pos): current_mood = "angry"
         screen.blit(moods[current_mood], (100,100))
         screen.blit(mood_text, (100, 20))
+        screen.blit(mood_values[current_mood], (150, 500))
         pygame.display.update()
         clock.tick(60)
 
