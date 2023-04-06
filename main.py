@@ -12,6 +12,11 @@ def main():
 
     moods = {'happy': happy, 'angry': angry, 'sleepy': sleepy, 'excited': excited}
 
+    happy_button = pygame.image.load("lib/assets/happy.png")
+    angry_button = pygame.image.load("lib/assets/angry.png")
+    sleepy_button = pygame.image.load("lib/assets/sleepy.png")
+    excited_button = pygame.image.load("lib/assets/excited.png")
+
     screen = pygame.display.set_mode((480,800))
     clock = pygame.time.Clock()
 
