@@ -12,6 +12,8 @@ def main():
 
     moods = {'happy': happy, 'angry': angry, 'sleepy': sleepy, 'excited': excited}
 
+    current_mood = 'sleepy'
+
     happy_button = pygame.transform.scale(pygame.image.load("lib/assets/happy.png"), (100,40))
     angry_button = pygame.transform.scale(pygame.image.load("lib/assets/angry.png"), (100,40))
     sleepy_button = pygame.transform.scale(pygame.image.load("lib/assets/sleepy.png"), (100,40))
@@ -20,19 +22,29 @@ def main():
     screen = pygame.display.set_mode((480,800))
     clock = pygame.time.Clock()
 
+    base_font = pygame.font.Font(None, 32)
+
     run = True
 
     screen.fill(BG)
 
     while run:
+        screen.fill(BG)
+        mood_text = base_font.render(f"Current mood: {current_mood}", False, (0,0,0))
+        sleepy_rect = screen.blit(sleepy_button, (50, screen.get_height() - 100))
+        happy_rect = screen.blit(happy_button, (150, screen.get_height() - 100))
+        excited_rect = screen.blit(excited_button, (250, screen.get_height() - 100))
+        angry_rect = screen.blit(angry_button, (350, screen.get_height() - 100))
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT: run = False
-
-        screen.blit(sleepy_button, (50, screen.get_height() - 100))
-        screen.blit(happy_button, (150, screen.get_height() - 100))
-        screen.blit(excited_button, (250, screen.get_height() - 100))
-        screen.blit(angry_button, (350, screen.get_height() - 100))
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if sleepy_rect.collidepoint(event.pos): current_mood = "sleepy"
+                if happy_rect.collidepoint(event.pos): current_mood = "happy"
+                if excited_rect.collidepoint(event.pos): current_mood = "excited"
+                if angry_rect.collidepoint(event.pos): current_mood = "angry"
+        screen.blit(moods[current_mood], (100,100))
+        screen.blit(mood_text, (100, 20))
         pygame.display.update()
         clock.tick(60)
 
